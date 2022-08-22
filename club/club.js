@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const helmet = require("helmet");
 const cors = require('cors')
@@ -25,7 +27,7 @@ app.use(Sentry.Handlers.tracingHandler());
 app.use(helmet())
 app.use(cors())
 
-const db_url = "mongodb+srv://groovenation_api_test:JKZbCVWmzx8o1arX@cluster0.cezun.mongodb.net/groovenation?authSource=admin&replicaSet=atlas-12jllf-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=true";
+const db_url = process.env.MONGO_DB_URL;
 mongoose.connect(db_url, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true});
 var db = mongoose.connection;
 

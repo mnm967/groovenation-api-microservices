@@ -18,11 +18,11 @@ const Tracing = require("@sentry/tracing");
 Sentry.init({
     dsn: "https://b8ae065022004656816c347d62e327b2@o405222.ingest.sentry.io/6062169",
     integrations: [
-      new Sentry.Integrations.Http({ tracing: true }),
-      new Tracing.Integrations.Express({ app }),
+        new Sentry.Integrations.Http({ tracing: true }),
+        new Tracing.Integrations.Express({ app }),
     ],
     tracesSampleRate: 1.0,
-  });
+});
 
 app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
@@ -30,11 +30,11 @@ app.use(Sentry.Handlers.tracingHandler());
 app.use(helmet())
 app.use(cors())
 
-const db_url = "mongodb+srv://groovenation_api_test:JKZbCVWmzx8o1arX@cluster0.cezun.mongodb.net/groovenation?authSource=admin&replicaSet=atlas-12jllf-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=true";
-mongoose.connect(db_url, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true});
+const db_url = process.env.MONGO_DB_URL;
+mongoose.connect(db_url, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true });
 var db = mongoose.connection;
 
-if(!db) console.log("Error Connecting Database");
+if (!db) console.log("Error Connecting Database");
 else console.log("Database Connected Successfully");
 
 app.use(express.static('files'))
@@ -73,57 +73,57 @@ app.post('/api/v1/chat/message/send', (req, res) => {
     });
 })
 
-async function sendMessageCallback(newMessage, isConversationNew, conversation, fcm_token, res, isImage){
+async function sendMessageCallback(newMessage, isConversationNew, conversation, fcm_token, res, isImage) {
     var message = {};
 
-    if(isImage){
-        if(isConversationNew) res.json({
+    if (isImage) {
+        if (isConversationNew) res.json({
             "status": 1,
             "command": "add_message_conversation",
             "messageType": newMessage.messageType,
-            "conversationId" : newMessage.conversationId,
+            "conversationId": newMessage.conversationId,
             "message": JSON.stringify(newMessage),
             "conversation": JSON.stringify(conversation)
         }); else res.json({
             "status": 1,
             "command": "add_message",
             "messageType": newMessage.messageType,
-            "conversationId" : newMessage.conversationId,
+            "conversationId": newMessage.conversationId,
             "message": JSON.stringify(newMessage)
         });
     }
 
-    if(isConversationNew){
-        if(!isImage) res.json({
+    if (isConversationNew) {
+        if (!isImage) res.json({
             status: 2,
             conversation: conversation
         });
 
-        message = {            
+        message = {
             data: {
-                "command" : "add_message_conversation",
-                "message" : JSON.stringify(newMessage),
-                "conversation" : JSON.stringify(conversation),
-                "conversationId" : newMessage.conversationId.toString(),
-                "messageType" : newMessage.messageType.toString(),
+                "command": "add_message_conversation",
+                "message": JSON.stringify(newMessage),
+                "conversation": JSON.stringify(conversation),
+                "conversationId": newMessage.conversationId.toString(),
+                "messageType": newMessage.messageType.toString(),
             },
             android: {
                 priority: "high",
             },
             token: fcm_token
         };
-    }else{
-        if(!isImage) res.json({
+    } else {
+        if (!isImage) res.json({
             status: 1,
             message: 'success'
         });
 
-        message = {            
+        message = {
             data: {
-                "command" : "add_message",
-                "message" : JSON.stringify(newMessage),
-                "conversationId" : newMessage.conversationId.toString(),
-                "messageType" : newMessage.messageType.toString(),
+                "command": "add_message",
+                "message": JSON.stringify(newMessage),
+                "conversationId": newMessage.conversationId.toString(),
+                "messageType": newMessage.messageType.toString(),
             },
             android: {
                 priority: "high",
@@ -131,15 +131,15 @@ async function sendMessageCallback(newMessage, isConversationNew, conversation, 
             token: fcm_token
         };
     }
-        
-    if(fcm_token != null){
+
+    if (fcm_token != null) {
         admin.messaging().send(message)
-        .then((response) => {
-            console.log('Successfully sent message:', response);
-        })
-        .catch((error) => {
-            console.log('Error sending message:', error);
-        });
+            .then((response) => {
+                console.log('Successfully sent message:', response);
+            })
+            .catch((error) => {
+                console.log('Error sending message:', error);
+            });
     }
 }
 

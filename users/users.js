@@ -16,11 +16,11 @@ const Tracing = require("@sentry/tracing");
 Sentry.init({
     dsn: "https://b8ae065022004656816c347d62e327b2@o405222.ingest.sentry.io/6062169",
     integrations: [
-      new Sentry.Integrations.Http({ tracing: true }),
-      new Tracing.Integrations.Express({ app }),
+        new Sentry.Integrations.Http({ tracing: true }),
+        new Tracing.Integrations.Express({ app }),
     ],
     tracesSampleRate: 1.0,
-  });
+});
 
 app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
@@ -36,11 +36,11 @@ app.use(express.urlencoded({
 
 app.use(express.json());
 
-const db_url = "mongodb+srv://groovenation_api_test:JKZbCVWmzx8o1arX@cluster0.cezun.mongodb.net/groovenation?authSource=admin&replicaSet=atlas-12jllf-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=true";
-mongoose.connect(db_url, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true});
+const db_url = process.env.MONGO_DB_URL;
+mongoose.connect(db_url, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true });
 var db = mongoose.connection;
 
-if(!db) console.log("Error Connecting Database");
+if (!db) console.log("Error Connecting Database");
 else console.log("Database Connected Successfully");
 
 app.get('/', auth, (req, res) => {
@@ -78,5 +78,5 @@ app.post('/api/v1/users/create/username', auth, (req, res) => {
 app.use(Sentry.Handlers.errorHandler());
 
 app.listen(PORT, () => {
-    console.log('Server running on '+PORT);
+    console.log('Server running on ' + PORT);
 })

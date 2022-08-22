@@ -1,4 +1,5 @@
 require('dotenv').config()
+console.log(process.env)
 
 const express = require('express');
 const aws = require('aws-sdk');
@@ -96,7 +97,7 @@ app.post('/api/v1/social/profile/update', (req, res) => {
     })
 })
 
-const db_url = "mongodb+srv://groovenation_api_test:JKZbCVWmzx8o1arX@cluster0.cezun.mongodb.net/groovenation?authSource=admin&replicaSet=atlas-12jllf-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=true";
+const db_url = process.env.MONGO_DB_URL;
 mongoose.connect(db_url, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true});
 var db = mongoose.connection;
 
@@ -110,6 +111,14 @@ app.use(express.urlencoded({
 }));
 
 app.use(express.json());
+
+app.get('/api/v1/social/conversations/persons/:userId', (req, res) => {
+    SocialController.get_conversation_users(req, res)
+})
+
+app.post('/api/v1/social/conversations/users', (req, res) => {
+    SocialController.get_conversation_users(req, res)
+})
 
 app.get('/api/v1/social/following/:user_id/:page', (req, res) => {
     SocialController.get_following_social_posts(req, res)

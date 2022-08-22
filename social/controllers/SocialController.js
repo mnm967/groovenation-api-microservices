@@ -7,6 +7,7 @@ const SocialComment = require('../models/SocialComment');
 const { Types } = require('mongoose');
 const SocialCommentLike = require('../models/SocialCommentLike');
 const User = require('../models/User');
+const Conversation = require('../models/Conversation');
 const mongoose_fuzzy_searching = require('mongoose-fuzzy-searching');
 const formidable = require('formidable');
 const Club = require('../models/Club');
@@ -543,7 +544,7 @@ async function createVideoThumbnail(mediaUrl) {
         const params = {
             Bucket: process.env.DIGITAL_OCEAN_SPACES_BUCKET_NAME + "/thumbnails",
             Key: filename,
-            ACL:'public-read',
+            ACL: 'public-read',
             Body: fileContent
         };
 
@@ -904,4 +905,78 @@ exports.create_report = async function (req, res) {
         if (err) returnUnknownError(res)
         else returnSuccessMessage(res)
     })
+}
+
+
+exports.get_conversation_users = async function (req, res) {
+    var userId = req.body.userId;
+    var usersList = JSON.parse(req.body.users);
+
+    User.find().where('_id').in(usersList).exec(async (err, users) => {
+        if (err) returnUnknownError(res);
+        else {
+            var USERS = [];
+            for (var i = 0; i < users.length; i++) {
+                var person = await getSocialPerson(users[i], userId);
+                console.log(person);
+                USERS.push(person);
+            }
+
+            res.json({
+                status: 1,
+                social_people: USERS
+            });
+        }
+    });
+}
+
+exports.get_user_conversation_persons = async function (req, res) {
+    var userId = req.params.userId;
+
+    Conversation.find({
+        $or: [
+            { 'user': Types.ObjectId(userId) },
+            { 'secondUser': Types.ObjectId(userId) }
+        ]
+    }).exec(async (err, conversations) => {
+        if (err) returnUnknownError(res);
+        else {
+            var userIds = [];
+            for (var i = 0; i < conversations.length; i++) {
+                if (conversations[i].user == userId) {
+                    userIds.push(conversations[i].secondUser);
+                } else {
+                    userIds.push(conversations[i].user);
+                }
+            }
+
+            var USERS = [];
+            for (var i = 0; i < userIds.length; i++) {
+                var person = await getSocialPerson(users[i], userId);
+                USERS.push(person);
+            }
+
+            res.json({
+                status: 1,
+                social_people: USERS
+            });
+        }
+    });
+
+    User.find().where('_id').in(usersList).exec(async (err, users) => {
+        if (err) returnUnknownError(res);
+        else {
+            var USERS = [];
+            for (var i = 0; i < users.length; i++) {
+                var person = await getSocialPerson(users[i], userId);
+                console.log(person);
+                USERS.push(person);
+            }
+
+            res.json({
+                status: 1,
+                social_people: USERS
+            });
+        }
+    });
 }

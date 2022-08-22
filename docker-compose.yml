@@ -28,7 +28,7 @@ services:
     build: './ticket'
     restart: on-failure
     ports:
-      - "3004:3000"
+      - "3007:3000"
 
   chat:
     build: './chat'
