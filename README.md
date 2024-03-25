@@ -44,7 +44,8 @@ To run the backend locally using Docker Compose, follow these steps:
      AWS_ACCESS_KEY_ID=your-aws-access-key
      AWS_SECRET_ACCESS_KEY=your-aws-secret-key
      AWS_S3_BUCKET=your-s3-bucket-name
-     SENTRY_DSN=your-sentry-dsn     ```
+     SENTRY_DSN=your-sentry-dsn
+     ```
    - Replace the fields with your actual values.
    - You can use Sentry for tracking bugs, view sentry.io for more details
 
