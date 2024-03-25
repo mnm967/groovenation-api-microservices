@@ -18,7 +18,7 @@ const Sentry = require('@sentry/node');
 const Tracing = require("@sentry/tracing");
 
 Sentry.init({
-    dsn: "https://b8ae065022004656816c347d62e327b2@o405222.ingest.sentry.io/6062169",
+    dsn: process.env.SENTRY_DSN,
     integrations: [
       new Sentry.Integrations.Http({ tracing: true }),
       new Tracing.Integrations.Express({ app }),
@@ -32,18 +32,18 @@ app.use(Sentry.Handlers.tracingHandler());
 app.use(helmet())
 app.use(cors())
 
-const spacesEndpoint = new aws.Endpoint(process.env.DIGITAL_OCEAN_SPACES_ENDPOINT);
+const spacesEndpoint = new aws.Endpoint(process.env.AWS_S3_ENDPOINT);
 
 const s3 = new aws.S3({
   endpoint: spacesEndpoint,
-  accessKeyId: process.env.DIGITAL_OCEAN_SPACES_KEY,
-  secretAccessKey: process.env.DIGITAL_OCEAN_SPACES_SECRET
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 });
 
 const upload = multer({
     storage: multerS3({
         s3: s3,
-        bucket: process.env.DIGITAL_OCEAN_SPACES_BUCKET_NAME+"/posts",
+        bucket: process.env.AWS_S3_BUCKET+"/posts",
         acl: 'public-read',
         key: function (req, file, cb) {
             console.log(file);
@@ -55,7 +55,7 @@ const upload = multer({
 const uploadProfileSettings = multer({
     storage: multerS3({
         s3: s3,
-        bucket: process.env.DIGITAL_OCEAN_SPACES_BUCKET_NAME+"/social",
+        bucket: process.env.AWS_S3_BUCKET+"/social",
         acl: 'public-read',
         key: function (req, file, cb) {
             console.log(file);
@@ -96,7 +96,7 @@ app.post('/api/v1/social/profile/update', (req, res) => {
     })
 })
 
-const db_url = "mongodb+srv://groovenation_api_test:JKZbCVWmzx8o1arX@cluster0.cezun.mongodb.net/groovenation?authSource=admin&replicaSet=atlas-12jllf-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=true";
+const db_url = process.env.MONGODB_URI;
 mongoose.connect(db_url, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true});
 var db = mongoose.connection;
 

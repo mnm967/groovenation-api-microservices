@@ -14,7 +14,7 @@ const Sentry = require('@sentry/node');
 const Tracing = require("@sentry/tracing");
 
 Sentry.init({
-    dsn: "https://b8ae065022004656816c347d62e327b2@o405222.ingest.sentry.io/6062169",
+    dsn: process.env.SENTRY_DSN,
     integrations: [
       new Sentry.Integrations.Http({ tracing: true }),
       new Tracing.Integrations.Express({ app }),
@@ -36,7 +36,7 @@ app.use(express.urlencoded({
 
 app.use(express.json());
 
-const db_url = "mongodb+srv://groovenation_api_test:JKZbCVWmzx8o1arX@cluster0.cezun.mongodb.net/groovenation?authSource=admin&replicaSet=atlas-12jllf-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=true";
+const db_url = process.env.MONGODB_URI;
 mongoose.connect(db_url, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true});
 var db = mongoose.connection;
 

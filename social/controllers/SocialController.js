@@ -23,12 +23,12 @@ const POSTS_PER_PAGE = 25;
 const COMMENTS_PER_PAGE = 25;
 const SOCIAL_PEOPLE_PER_PAGE = 25;
 
-const spacesEndpoint = new aws.Endpoint(process.env.DIGITAL_OCEAN_SPACES_ENDPOINT);
+const spacesEndpoint = new aws.Endpoint(process.env.AWS_S3_ENDPOINT);
 
 const s3 = new aws.S3({
     endpoint: spacesEndpoint,
-    accessKeyId: process.env.DIGITAL_OCEAN_SPACES_KEY,
-    secretAccessKey: process.env.DIGITAL_OCEAN_SPACES_SECRET
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env. AWS_SECRET_ACCESS_KEY
 });
 
 const socialRanking = {
@@ -541,7 +541,7 @@ async function createVideoThumbnail(mediaUrl) {
 
         const fileContent = fs.readFileSync(__dirname + '\\temp\\' + filename);
         const params = {
-            Bucket: process.env.DIGITAL_OCEAN_SPACES_BUCKET_NAME + "/thumbnails",
+            Bucket: process.env.AWS_S3_BUCKET + "/thumbnails",
             Key: filename,
             ACL:'public-read',
             Body: fileContent
