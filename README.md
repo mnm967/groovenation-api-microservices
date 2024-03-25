@@ -1,4 +1,4 @@
-# GrooveNation Backend
+# GrooveNation NodeJS + Express Backend
 
 The GrooveNation backend is a NodeJS application that serves as the server-side component for the GrooveNation Flutter app. It is built using the Express framework and connects to a MongoDB database for data storage and retrieval. The backend follows a microservices architecture and utilizes Docker for containerization.
 
